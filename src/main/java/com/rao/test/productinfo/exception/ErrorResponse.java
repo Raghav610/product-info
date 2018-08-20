@@ -1,7 +1,8 @@
 package com.rao.test.productinfo.exception;
 
 public class ErrorResponse {
-
+	
+	
 	private String errorMessage;
 
 	public ErrorResponse(String errorMessage){
@@ -12,8 +13,8 @@ public class ErrorResponse {
 		return errorMessage;
 	}
 
-	/*public void setErrorMessage(String errorMessage) {
+	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
-	}*/
+	}
 
 }
