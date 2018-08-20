@@ -12,7 +12,7 @@ public class ProductRepositoryImpl {
 
 	public static String prepareSecondString(ProductInTransit productInTransit) {
 		
-		String request2 = null;
+		StringBuilder request2 = new StringBuilder();
 		
 		String upsTrackNumber = null;
 		String warehouseCode = null;
@@ -20,21 +20,26 @@ public class ProductRepositoryImpl {
 
 		for(ProductItem productItem : productInTransit.getItemList()) {
 			
-			System.out.println("Product Item : " +productItem);
+			System.out.println("Product Item : " +productItem + ", Request 2 : " + request2);
 			
 			upsTrackNumber = productItem.getTrackingNumber();
 			warehouseCode = productItem.getWarehouseCode();
 			storeCode = productItem.getStoreCode();
 			
-			request2 = productItem.getSKU()+"~"+productItem.getUPC()+"~"+productItem.getQuantity();
+			//request2 = productItem.getSKU()+"~"+productItem.getUPC()+"~"+productItem.getQuantity();
+			
+			request2 = request2.append(productItem.getSKU()).append("~").append(productItem.getUPC()).append("~").append(productItem.getQuantity());
 			
 			System.out.println("SKU : "+ productItem.getSKU() +", Request :: " + request2);
 		}
-		request2 = upsTrackNumber+"~"+storeCode+"~"+warehouseCode+"~"+request2+"~";
+		//request2 = upsTrackNumber+"~"+storeCode+"~"+warehouseCode+"~"+request2+"~";
+		StringBuilder sb = new StringBuilder();
 		
-		System.out.println("Request 2 : " + request2);
+		sb = sb.append(upsTrackNumber).append("~").append(storeCode).append("~").append(warehouseCode).append("~").append(request2).append("~");
 		
-		return request2;
+		System.out.println("Request 2 : " + sb.toString());
+		
+		return sb.toString();
 	}
 
 
