@@ -46,5 +46,13 @@ public class CommonUtil {
 		}
 		return true;
 	}
+	
+	public static boolean isZeroOrNegative(String str) {
+
+		if(Integer.parseInt(str)<=0) 
+			return false;
+		else 
+			return true;
+	}
 
 }

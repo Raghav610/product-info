@@ -1,138 +1,66 @@
-/*package com.rao.test.productinfo.validation;
+package com.rao.test.productinfo.validation;
 
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
-public class RequestValidator implements Validator{
+import com.rao.test.productinfo.domain.ProductItem;
+import com.rao.test.productinfo.exception.BadRequestException;
+import com.rao.test.productinfo.exception.ErrorResponse;
+import com.rao.test.productinfo.exception.MissingParameterError;
+import com.rao.test.productinfo.exception.ProductInfoException;
+import com.rao.test.productinfo.utils.ErrorInfo;
+import com.rao.test.productinfo.utils.ProductConstants;
+
+@Component
+public class RequestValidator {
 
 	@Autowired
-	@Qualifier("customMessageResource")
-	MessageSource messageSource;
+	private MessageSource messageSource;
 
+	public boolean isValidRequest(ProductItem productItem) throws MissingParameterError, BadRequestException {
 
-	// Validate SPCode,start for InventoryDispositionCategory
-	public void validateCategory(String spcode) throws ClientException {
+		boolean isValidReq = isNotNullCheck(productItem);
 
-
-		if(CommonUtil.isEmpty(spcode.trim())){
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("empty.request.parameter",
-							new Object[] { spcode, "spcode" }, null), null);                  
-
+		if(isValidReq) {
+			if(!StringUtils.isNumeric(productItem.getSKU()) || !CommonUtil.isValidLength(productItem.getSKU(), ProductConstants.MAX_LENGTH, ProductConstants.MIN_LENGTH)) {
+				throw new BadRequestException(new ErrorInfo(HttpStatus.BAD_REQUEST,messageSource.getMessage(
+						ProductConstants.NUMERIC_FIELD_REQUIRED_LENGTH, new Object[] { ProductConstants.FIELD_SKU }, Locale.US)));
+			}
+			if(!StringUtils.isNumeric(productItem.getQuantity()) || !CommonUtil.isZeroOrNegative(productItem.getQuantity()) ) {
+				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
+						ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_QUANTITY }, Locale.US)));
+			}
+			if(!StringUtils.isNumeric(productItem.getUPC())) {
+				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
+						ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_UPC }, Locale.US)));
+			}
+			if(!StringUtils.isNumeric(productItem.getStoreCode())) {
+				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
+						ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_STORE_CODE }, Locale.US)));
+			}
 		}
-
-		else if (!CommonUtil.isValidLength(spcode, 3)) {                             
-
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("large.request.parameter",
-							new Object[] { spcode, "spcode",3 }, null), null);
-
-		}
-
+		return true;
 	}
 
-	// Validate SPCode,end for InventoryDispositionCategory
 
+	private static boolean isNotNullCheck(ProductItem productItem) throws MissingParameterError {
 
-	// Validate SPCode,start for InventoryMaster
-
-	public void validateDivision(String sku) throws ClientException{
-
-		if(CommonUtil.isEmpty(sku.trim())){
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("empty.request.parameter",
-							new Object[] { sku, "sku" }, null), null);
-
-		}                              
-		else if (!CommonUtil.isValidLength(sku, 9)) {
-
-
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("large.request.parameter",
-							new Object[] { sku, "sku",9 }, null), null);
-
+		if (CommonUtil.isEmpty(productItem.getSKU())) {
+			if (CommonUtil.isEmpty(productItem.getUPC())) {
+				throw new MissingParameterError(ProductInfoException.GROUP.GENERIC, "SKU or UPC is mandatory.", HttpStatus.BAD_REQUEST);
+			}
+		} else if (CommonUtil.isEmpty(productItem.getQuantity())) {
+			throw new MissingParameterError(ProductInfoException.GROUP.GENERIC, "Quantity is null or empty");
+		} else if (CommonUtil.isEmpty(productItem.getStoreCode())) {
+			throw new MissingParameterError(ProductInfoException.GROUP.GENERIC, "Store Code is null or empty");
+		} else if (CommonUtil.isEmpty(productItem.getTrackingNumber())) {
+			throw new MissingParameterError(ProductInfoException.GROUP.GENERIC, "Tracking Number is null or empty");
 		}
-
-		// Validate SPCode,end for InventoryMaster
-
+		return true;
 	}
-
-	// Validate  sku,vendorNumber and locationType for InventoryDisposition,start
-
-	public void validateExpiryDate(String sku, String vendorNumber, String locationType) throws ClientException{
-
-		if(CommonUtil.isEmpty(sku.trim())){
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("empty.request.parameter",
-							new Object[] { sku, "sku" }, null), null);                 
-
-		}
-
-		else if (!CommonUtil.isValidLength(sku, 14)) {                  
-
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("large.request.parameter",
-							new Object[] { sku, "sku",14 }, null), null);
-
-		}
-
-		if(CommonUtil.isEmpty(vendorNumber.trim())){
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("empty.request.parameter",
-							new Object[] { vendorNumber, "vendorNumber" }, null), null);                                
-
-		}
-
-		else if (!CommonUtil.isValidLength(vendorNumber, 6)) {                            
-
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("large.request.parameter",
-							new Object[] { vendorNumber, "vendorNumber",6 }, null), null);
-
-		}
-
-		if(CommonUtil.isEmpty(locationType.trim())){
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("empty.request.parameter",
-							new Object[] { locationType, "locationType" }, null), null);                          
-
-		}
-
-		else if (!CommonUtil.isValidLength(locationType, 1)) {                 
-
-			throw new ClientException(Integer.parseInt(messageSource
-					.getMessage(Constants.VALIDATION_ERROR_CODE, null, null)),
-					messageSource.getMessage("large.request.parameter",
-							new Object[] { locationType, "locationType",1}, null), null);
-
-		}
-
-		// Validate  sku,vendorNumber and locationType for InventoryDisposition,end
-	}
-
-	@Override
-	public boolean supports(Class<?> clazz) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void validate(Object target, Errors errors) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
-*/

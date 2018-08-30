@@ -1,15 +1,15 @@
 package com.rao.test.productinfo.controller;
 
 import java.net.URI;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,23 +32,18 @@ import com.rao.test.productinfo.exception.ProductInfoException;
 import com.rao.test.productinfo.repository.ProductRepository;
 import com.rao.test.productinfo.repository.ProductRepositoryImpl;
 import com.rao.test.productinfo.utils.ErrorInfo;
-import com.rao.test.productinfo.utils.ProductConstants;
-import com.rao.test.productinfo.utils.RequestValidator;
 import com.rao.test.productinfo.utils.SuccessResponse;
-
+import com.rao.test.productinfo.validation.RequestValidator;
 
 @RestController
 public class ProductController {
-
-	@Autowired
-	private MessageSource messageSource;
 
 	@Autowired
 	ProductRepository productRepository;
 
 	@Autowired
 	RequestValidator requestValidator;
-
+	
 	@GetMapping("getAll")
 	public Iterable<Product> getAllProduct() throws Exception{
 		return productRepository.findAll();
@@ -61,7 +56,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/productbyId/{id}")
-	public Product getProductById(@PathVariable Integer id){
+	public Product getProductById(@PathVariable Integer id) {
 		java.util.Optional<Product> product = productRepository.findById(id);
 		return product.get();
 	}
@@ -76,8 +71,9 @@ public class ProductController {
 		return null;
 	}
 
-
-	@PostMapping("/addProduct")
+	@PostMapping(path="/addProduct" , 
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createProduct(@RequestBody Product productDTO){
 
 		Product product = productRepository.save(productDTO);
@@ -88,7 +84,9 @@ public class ProductController {
 		return ResponseEntity.created(location).build();
 	}
 
-	@PutMapping("/updateProduct/{id}")
+	@PutMapping(path="/updateProduct/{id}",
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateProduct(@RequestBody Product productDTO ,
 			@PathVariable Integer id){
 
@@ -108,17 +106,19 @@ public class ProductController {
 
 		SuccessResponse successResponse = new SuccessResponse();
 		ErrorInfo errorInfo = new ErrorInfo();
-		
+
 		String sku = null;
-		
+
 		for(ProductItem productItem : productInTransit.getItemList()) {
 
 			requestValidator.isValidRequest(productItem);	
 			sku = productItem.getSKU();
 		}
-		
-		String request2 = ProductRepositoryImpl.prepareSecondString(productInTransit);
-		
+
+		Map<String,String> mapReq = ProductRepositoryImpl.populateRequestParam(productInTransit);
+
+		mapReq.forEach((k,v) -> System.out.println("Key = "   + k + ", Value = " + v));
+
 		String result = ProductRepositoryImpl.getResult(sku);
 
 		System.out.println("RESULTS : " + result);

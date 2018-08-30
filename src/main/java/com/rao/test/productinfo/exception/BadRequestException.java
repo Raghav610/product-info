@@ -1,8 +1,12 @@
 package com.rao.test.productinfo.exception;
 
-import com.rao.test.productinfo.utils.ErrorInfo;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class BadRequestException extends ProductInfoException {
+import com.rao.test.productinfo.utils.ErrorInfo;
+import org.springframework.http.HttpStatus;
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class BadRequestException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

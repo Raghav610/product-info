@@ -6,9 +6,9 @@ public class ProductItem {
 	private String UPC ;
 	private String quantity;
 	private String storeCode;
-	private String warehouseCode;
+	//private String warehouseCode;
 	private String trackingNumber;
-	
+
 	public String getSKU() {
 		return SKU;
 	}
@@ -33,22 +33,22 @@ public class ProductItem {
 	public void setStoreCode(String storeCode) {
 		this.storeCode = storeCode;
 	}
-	public String getWarehouseCode() {
+	/*public String getWarehouseCode() {
 		return warehouseCode;
 	}
 	public void setWarehouseCode(String warehouseCode) {
 		this.warehouseCode = warehouseCode;
 	}
-	public String getTrackingNumber() {
-		return trackingNumber;
-	}
-	public void setTrackingNumber(String trackingNumber) {
-		this.trackingNumber = trackingNumber;
-	}
-	@Override
-	public String toString() {
-		return "ProductItem [SKU=" + SKU + ", UPC=" + UPC + ", quantity=" + quantity + ", storeCode=" + storeCode
-				+ ", warehouseCode=" + warehouseCode + ", trackingNumber=" + trackingNumber + "]";
-	}
+	 */	public String getTrackingNumber() {
+		 return trackingNumber;
+	 }
+	 public void setTrackingNumber(String trackingNumber) {
+		 this.trackingNumber = trackingNumber;
+	 }
+	 @Override
+	 public String toString() {
+		 return "ProductItem [SKU=" + SKU + ", UPC=" + UPC + ", quantity=" + quantity + ", storeCode=" + storeCode
+				  + ", trackingNumber=" + trackingNumber + "]";
+	 }
 
 }
