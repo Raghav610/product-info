@@ -27,17 +27,21 @@ public class RequestValidator {
 		boolean isValidReq = isNotNullCheck(productItem);
 
 		if(isValidReq) {
-			if(!StringUtils.isNumeric(productItem.getSKU()) || !CommonUtil.isValidLength(productItem.getSKU(), ProductConstants.MAX_LENGTH, ProductConstants.MIN_LENGTH)) {
-				throw new BadRequestException(new ErrorInfo(HttpStatus.BAD_REQUEST,messageSource.getMessage(
-						ProductConstants.NUMERIC_FIELD_REQUIRED_LENGTH, new Object[] { ProductConstants.FIELD_SKU }, Locale.US)));
+			if(productItem.getSKU().length()>0) {
+				if(!StringUtils.isNumeric(productItem.getSKU()) || !CommonUtil.isValidLength(productItem.getSKU(), ProductConstants.MAX_LENGTH, ProductConstants.MIN_LENGTH)) {
+					throw new BadRequestException(new ErrorInfo(HttpStatus.BAD_REQUEST,messageSource.getMessage(
+							ProductConstants.NUMERIC_FIELD_REQUIRED_LENGTH, new Object[] { ProductConstants.FIELD_SKU }, Locale.US)));
+				}
 			}
 			if(!StringUtils.isNumeric(productItem.getQuantity()) || !CommonUtil.isZeroOrNegative(productItem.getQuantity()) ) {
 				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
 						ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_QUANTITY }, Locale.US)));
 			}
-			if(!StringUtils.isNumeric(productItem.getUPC())) {
-				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
-						ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_UPC }, Locale.US)));
+			if(productItem.getUPC().length()>0) {
+				if(!StringUtils.isNumeric(productItem.getUPC()) || !CommonUtil.isValidLength(productItem.getUPC(), ProductConstants.MAX_LENGTH)){
+					throw new BadRequestException(new ErrorResponse(messageSource.getMessage(
+							ProductConstants.NUMERIC_FIELD_REQUIRED, new Object[] { ProductConstants.FIELD_UPC }, Locale.US)));
+				}
 			}
 			if(!StringUtils.isNumeric(productItem.getStoreCode())) {
 				throw new BadRequestException(new ErrorResponse(messageSource.getMessage(

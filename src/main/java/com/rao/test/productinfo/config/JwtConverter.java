@@ -1,4 +1,4 @@
-/*package com.rao.test.productinfo.config;
+package com.rao.test.productinfo.config;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.JwtAccessTokenConverterConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
@@ -12,4 +12,4 @@ public class JwtConverter extends DefaultAccessTokenConverter implements JwtAcce
 	public void configure(JwtAccessTokenConverter converter) {
 		converter.setAccessTokenConverter(this);
 	}
-}*/
+}

@@ -8,8 +8,5 @@ import com.rao.test.productinfo.exception.EmptyResponseException;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Product findByName(String name) throws EmptyResponseException;
-	//String addProduct(Integer id ,String name , String description) throws Exception;
-	
-	//Product findById(Integer id);
 
 }

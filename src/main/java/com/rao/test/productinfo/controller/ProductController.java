@@ -1,12 +1,19 @@
 package com.rao.test.productinfo.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +39,7 @@ import com.rao.test.productinfo.exception.ProductInfoException;
 import com.rao.test.productinfo.repository.ProductRepository;
 import com.rao.test.productinfo.repository.ProductRepositoryImpl;
 import com.rao.test.productinfo.utils.ErrorInfo;
+import com.rao.test.productinfo.utils.ProductConstants;
 import com.rao.test.productinfo.utils.SuccessResponse;
 import com.rao.test.productinfo.validation.RequestValidator;
 
@@ -43,7 +51,10 @@ public class ProductController {
 
 	@Autowired
 	RequestValidator requestValidator;
-	
+
+	@Autowired
+	private MessageSource messageSource;
+
 	@GetMapping("getAll")
 	public Iterable<Product> getAllProduct() throws Exception{
 		return productRepository.findAll();
@@ -110,9 +121,15 @@ public class ProductController {
 		String sku = null;
 
 		for(ProductItem productItem : productInTransit.getItemList()) {
-
 			requestValidator.isValidRequest(productItem);	
 			sku = productItem.getSKU();
+		}
+
+		Set duplicateSet = findDuplicates(productInTransit);
+
+		if(!duplicateSet.isEmpty()) {
+			throw new BadRequestException(new ErrorInfo(HttpStatus.BAD_REQUEST,messageSource.getMessage(
+					ProductConstants.DUPLICATE_SKU, new Object[] { duplicateSet.iterator().next() }, Locale.US)));
 		}
 
 		Map<String,String> mapReq = ProductRepositoryImpl.populateRequestParam(productInTransit);
@@ -133,5 +150,35 @@ public class ProductController {
 			errorInfo.setErrorMessage(respArr[1]);
 			return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	public static Set<String> findDuplicates(ProductInTransit productInTransit) {
+
+		List<String> skuList = new ArrayList<>();
+
+		for(ProductItem productItem : productInTransit.getItemList()) {
+			
+			System.out.println("SKU : " + productItem.getSKU());
+			
+			if(productItem.getSKU().trim()!=null || !productItem.getSKU().trim().isEmpty()) {
+				skuList.add("SKU : " + productItem.getSKU());
+				System.out.println("Addedd : " + productItem.getSKU());
+			}
+
+		}
+		System.out.println("List Size : " + skuList);
+
+		final Set<String> setToReturn = new HashSet<String>();
+		final Set<String> set1 = new HashSet<String>();
+
+		for (String yourInt : skuList) {
+			if (!set1.add(yourInt)) {
+				setToReturn.add(yourInt);
+			}
+		}
+
+		System.out.println("Size -: " + setToReturn.size());
+
+		return setToReturn;
 	}
 }

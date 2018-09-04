@@ -1,4 +1,4 @@
-/*package com.rao.test.productinfo.config;
+package com.rao.test.productinfo.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,4 +17,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().anyRequest().authenticated().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.NEVER);
 	}
-}*/
+}

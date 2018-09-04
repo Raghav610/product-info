@@ -8,7 +8,8 @@ public class ProductConstants {
 	public static final String FIELD_REQUIRED 		 = "field.required";
 	public static final String NUMERIC_FIELD_REQUIRED = "numeric.field.required";
 	public static final String NUMERIC_FIELD_REQUIRED_LENGTH = "numeric.field.required.length";
-
+	public static final String DUPLICATE_SKU = "duplicate.sku";
+	
 	public static final String FIELD_UPC ="UPC";
 	public static final String FIELD_SKU ="SKU";
 	public static final String FIELD_QUANTITY ="Quantity";
